@@ -1,0 +1,328 @@
+---
+title: "Report"
+author: "Hadi Sam Nariman"
+date: "January 13, 2018"
+output: html_document
+---
+
+Uploading Needed Packages 
+```{r setup, message = FALSE}
+library(ggraph)
+library(qgraph)
+library(lavaan)
+library(broom)
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+library(semPlot)
+library(haven)
+library(psych)
+library(MVN)
+library(stargazer)
+library(car)
+library(dplyr)
+library(tibble)
+```
+
+Reading the Dataset 
+
+```{r message = FALSE}
+
+coll_df = read.table("C:\\Users\\User\\Desktop\\To Mac\\Hadi-Final-Project\\Dataframe.dat", header=TRUE)
+View (coll_df)
+```
+
+##Exploratory Data Analyses
+Exploring Missing Variables in the Dataset
+
+```{r}
+sapply(coll_df,function(x) sum(is.na(x)))
+```
+
+Exploring the Nature of the Variables 
+
+```{r}
+summary(coll_df)
+```
+
+###Check for outliers
+Boxplots 
+
+```{r}
+attach(coll_df)
+coll_df %>% 
+  gather(variable, value) %>%
+  ggplot() + 
+  aes(x = fct_rev(variable), y = value) +
+  geom_boxplot() +
+  coord_flip()
+detach(coll_df)
+```
+
+Inquring into q6_6 with an outlier
+
+```{r}
+outlierKD <- function(dt, var) {
+     var_name <- eval(substitute(var),eval(dt))
+     na1 <- sum(is.na(var_name))
+     m1 <- mean(var_name, na.rm = T)
+     par(mfrow=c(2, 2), oma=c(0,0,3,0))
+     boxplot(var_name, main="With outliers")
+     hist(var_name, main="With outliers", xlab=NA, ylab=NA)
+     outlier <- boxplot.stats(var_name)$out
+     mo <- mean(outlier)
+     var_name <- ifelse(var_name %in% outlier, NA, var_name)
+     boxplot(var_name, main="Without outliers")
+     hist(var_name, main="Without outliers", xlab=NA, ylab=NA)
+     title("Outlier Check", outer=TRUE)
+     na2 <- sum(is.na(var_name))
+     cat("Outliers identified:", na2 - na1, "n")
+     cat("Propotion (%) of outliers:", round((na2 - na1) / sum(!is.na(var_name))*100, 1), "n")
+     cat("Mean of the outliers:", round(mo, 2), "n")
+     m2 <- mean(var_name, na.rm = T)
+     cat("Mean without removing outliers:", round(m1, 2), "n")
+     cat("Mean if we remove outliers:", round(m2, 2), "n")
+     response <- readline(prompt="Do you want to remove outliers and to replace with NA? [yes/no]: ")
+     if(response == "y" | response == "yes"){
+          dt[as.character(substitute(var))] <- invisible(var_name)
+          assign(as.character(as.list(match.call())$dt), dt, envir = .GlobalEnv)
+          cat("Outliers successfully removed", "n")
+          return(invisible(dt))
+     } else{
+          cat("Nothing changed", "n")
+          return(invisible(var_name)) }}
+outlierKD(coll_df, q6_9)
+```
+
+###Tests of Normality
+
+```{r}
+coll_df %>% 
+  gather(variable, value) %>%
+  ggplot() + 
+  aes(x = value) +
+  geom_freqpoly() +
+  facet_wrap(~variable)
+```
+
+###Correlation Analyses
+####Correlation Between Sets of Items Representing the Dependent Latent Variables Analysed in the SEM Models Later
+
+Correlation between Items represnting Political Support and the Plot
+
+q18_1. Muslims are allowed to politically organize themselves in the Netherlands in order to try to influence policy.
+q18_4. Muslims are allowed to exercise important official duties (mayor, minister) in the Netherlands.
+
+```{r}
+cor(coll_df$q18_1 , coll_df$q18_4)
+ggplot(coll_df) +
+  aes(x = q18_1 , y = q18_4) +
+  geom_point(position = "jitter") + 
+  geom_smooth(method="lm")
+```
+
+Correlation between Items represnting Realistic Support and the Plot
+
+q18_3. Muslims are allowed to maintain their cultural identity.
+q18_6. Muslims are entitled to their own culture and traditions.
+
+```{r}
+cor(coll_df$q18_3 , coll_df$q18_6)
+ggplot(coll_df) +
+  aes(x = q18_3 , y = q18_6) +
+  geom_point(position = "jitter") + 
+  geom_smooth(method="lm")
+```
+
+Correlation between Items represnting Cultural Support and the Plot
+
+q18_2. Much more attention is needed for discrimination of Muslims on the labour market.
+q18_5. Better care should be taken of ensuring Muslims equal opportunities to get a good job.
+
+```{r}
+cor(coll_df$q18_2 , coll_df$q18_5)
+ggplot(coll_df) +
+  aes(x = q18_2 , y = q18_5) +
+  geom_point(position = "jitter") + 
+  geom_smooth(method="lm")
+```
+
+####Correlation between Three Froms of Threat (Symbolic, Realistic, and Collective Ownership) in a Path Analysis 
+
+```{r}
+model <- ' st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+ct =~ q16_9 + q16_10 + q16_11 + q16_12
+st ~~ rt
+st ~~ ct
+rt ~~ ct'
+cormodel <- sem(model, data=coll_df)
+summary(cormodel, fit.measures=TRUE, standardized=TRUE)
+semPaths(cormodel, "Standardized", "Estimates")
+```
+
+#Hypothesis I
+##Structural Equation Modeling 
+### Confirmatory Factor Analyses
+
+Confirmatory factor analyses were computed for all latent variables (both independent and dependent). Regarding the dependent constructs, the model $x^{2}$ of 12.131 showed a marginal absolute fit (*p* = .0591), while other measures confirmed that the model fit is satisfactory: CFI = .995; TLI = .989; SRMR = .012; and RMSEA = .048 and 90% CI = .001 - .088. All the factor loadings were statistically significant (*p* < .001) and the standardized factor loadings were between .78 and .92. 
+The model $x^{2}$ of 60.625 of the independent variables indicated a good model fit too (*p* = .1044) which was confirmed by other measures of model fit: CFI = .998; TLI = .998; SRMR = .01; and RMSEA = .02 and 90% CI = 0.001 - 0.042. All the factor loadings were statistically significant (*p* < .001) and the standardized factor loadings were between .83 and .95. Moreover, in order to improve the model fit, errors of two items from the symbolic threat scale and three items from the realistic threat scale were allowed to covary.
+
+####Conformatory Factor Analysis of the Dependent Variables 
+Model Specification 
+
+```{r}
+modeldv <- ' pol =~ q18_1 + q18_4
+real =~ q18_3 + q18_6
+cul =~ q18_2 + q18_5'
+fitdv <- cfa(modeldv, data=coll_df, std.lv=TRUE,missing="fiml")
+```
+
+Model Results and Plot 
+
+```{r}
+summary(fitdv, fit.measures=TRUE, standardized=TRUE)
+semPaths(fitdv, "Standardized", "Estimates")
+```
+
+####Conformatory Factor Analysis of the Independent Variables
+Model Specification
+
+```{r}
+modeliv <- ' st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12'
+
+fitiv <- cfa(modeliv, data=coll_df, std.lv=TRUE,missing="fiml")
+```
+
+Model Results 
+
+```{r}
+summary(fitiv, fit.measures=TRUE, standardized=TRUE)
+```
+
+Model Modification 
+
+```{r}
+modificationIndices(fitiv, sort.=TRUE, minimum.value=3)
+```
+
+Modified Model
+
+```{r}
+modeliv <- 'sT =~ q16_1 + q16_2 + q16_3 + q16_4
+rT =~ q16_5 + q16_6 + q16_7 + q16_8
+cO =~ q16_9 + q16_10 + q16_11 + q16_12
+q16_4 ~~ q16_1
+q16_7 ~~ q16_5
+q16_8 ~~ q16_5'
+fitiv <- cfa(modeliv, data=coll_df, std.lv=TRUE,missing="fiml")
+```
+
+Model Results and Plot
+
+```{r}
+summary(fitiv, fit.measures=TRUE, standardized=TRUE)
+semPaths(fitiv, "Standardized", "Estimates")
+```
+
+###Structural Model 
+The structural model indicated a good model fit ($x^{2} = 139.358$ ; df = 117; CFI = .997; TLI = .997; RMSEA = .021 with 90% CI = .001- .033). Hence, the model fit manifests that the model is apt to explaining the association among the constructs. The path coefficients from symbolic threat to political ($\beta$ = -.36, *p* = .023), cultural ($\beta$ = -.385, *p* = .031), and real support ($\beta$ = -.438, *p* = .009) were significantly negative. The path coefficients from realistic threat to political ($\beta$ = -.259, *p* = .02), cultural ($\beta$ = -0.28, *p* = .02), and real support ($\beta$ = -.327, *p* = 0.005) were also significantly negative. Path coefficient of collective ownership threat to the three forms of support, however, were not found significant. Hence, the higher perception of realistic and symbolic types of threat the lesser tendency on the support for integration of Muslims in the Netherlands.
+
+```{r}
+model <- 'pol =~ q18_1 + q18_4
+real =~ q18_3 + q18_6
+cul =~ q18_2 + q18_5
+st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12
+pol ~ st + rt + co
+real ~ st + rt + co
+cul ~ st + rt + co
+pol ~~ real
+pol ~~ cul
+real ~~ cul'
+fitsem <- cfa(model, data=coll_df, std.lv=TRUE,missing="fiml")
+summary(fitsem, fit.measures=TRUE)
+```
+
+Mdel Modification 
+
+```{r}
+modificationIndices(fitsem, sort.=TRUE, minimum.value=3)
+```
+
+Modified Model Fit of the Structural Model 
+
+```{r}
+model<- 'pol =~ q18_1 + q18_4
+real =~ q18_3 + q18_6
+cul =~ q18_2 + q18_5
+st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12
+pol ~ st + rt + co
+real ~ st + rt + co
+cul ~ st + rt + co
+q16_7 ~~ q16_5   
+q16_8 ~~ q16_5
+q16_4 ~~ q16_1
+pol ~~ real
+pol ~~ cul
+real ~~ cul'
+fitsem <- cfa(model, data=coll_df, std.lv=TRUE,missing="fiml")
+summary(fitsem, fit.measures=TRUE)
+```
+
+Modified Strucrural Model results and Plot 
+
+```{r}
+model<- 'pol =~ q18_1 + q18_4
+real =~ q18_3 + q18_6
+cul =~ q18_2 + q18_5
+st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12
+pol ~ st + rt + co
+real ~ st + rt + co
+cul ~ st + rt + co
+q16_7 ~~ q16_5   
+q16_8 ~~ q16_5
+q16_4 ~~ q16_1
+pol ~~ real
+pol ~~ cul
+real ~~ cul'
+smodel <- sem(model, data=coll_df)
+summary(smodel, standardized=TRUE)
+semPaths(smodel, "Standardized", "Estimates")
+```
+
+#Hypothesis II
+##Structural Equation Modeling 
+A structural equation modeling was conducted to measure the effect of three forms of threat on thermometer questions. The chi-square test didn't show an absolute fit ($x^{2} = 185.963$; df = 84; *p* < .001). However, other measures indicated a satisfactory model fit in general; CFI = .987; TLI = .984; SRMR = .023; and RMSEA = .053 and 90% CI < 0.043 - .063. The results showed that the path coefficients from symbolic threat to thermometer questions ($\beta$ = -.446, *p* = .003) were found to be significant. In other words, the higher the symbolic threat the more negative feelings are perceived. No significant statistics were found from the path coefficients of collective ownership and realistic types of threat on the thermometer questions.
+
+Model Fit 
+
+```{r}
+model<- 'thermo =~ q6_6 + q6_9 + q6_10
+st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12
+thermo ~ st + rt + co'
+fitsem <- cfa(model, data=coll_df, std.lv=TRUE,missing="fiml")
+summary(fitsem, fit.measures=TRUE)
+```
+
+Model Specification,Results, and Plot 
+
+```{r}
+model<- 'thermo =~ q6_6 + q6_9 + q6_10
+st =~ q16_1 + q16_2 + q16_3 + q16_4
+rt =~ q16_5 + q16_6 + q16_7 + q16_8
+co =~ q16_9 + q16_10 + q16_11 + q16_12
+thermo ~ st + rt + co'
+Thermomodel <- sem(model, data=coll_df)
+summary(Thermomodel, standardized=TRUE)
+semPaths(Thermomodel, "Standardized", "Estimates")
+``````
