@@ -162,6 +162,9 @@ semPaths(cormodel, "Standardized", "Estimates")
 ```
 
 #Hypothesis I
+
+I was hypothesized that there will be negative significant associations between the three forms of threat and support for the accommodation of migrants. The hypothesis was partly supported where higher degrees of symbolic and realistic threat resulted in lower support. Hwoever, there was no such a relatrionship between collective onwnership threat and support for the accommodation of migrants.
+
 ##Structural Equation Modeling 
 ### Confirmatory Factor Analyses
 
@@ -299,6 +302,9 @@ semPaths(smodel, "Standardized", "Estimates")
 ```
 
 #Hypothesis II
+
+I was hypothesized that higher perception of threat would lead to higher perception of negative feelings. The hypothesis was again partially supported as only symbolic threat significantly was associated with higher negative feelings. While no significant relations was found between the other two forms of threat, realistic and collective ownership, and perception of negative feelings. 
+
 ##Structural Equation Modeling 
 A structural equation modeling was conducted to measure the effect of three forms of threat on thermometer questions. The chi-square test didn't show an absolute fit ($x^{2} = 185.963$; df = 84; *p* < .001). However, other measures indicated a satisfactory model fit in general; CFI = .987; TLI = .984; SRMR = .023; and RMSEA = .053 and 90% CI < 0.043 - .063. The results showed that the path coefficients from symbolic threat to thermometer questions ($\beta$ = -.446, *p* = .003) were found to be significant. In other words, the higher the symbolic threat the more negative feelings are perceived. No significant statistics were found from the path coefficients of collective ownership and realistic types of threat on the thermometer questions.
 
