@@ -1,5 +1,5 @@
 ---
-title: "Report"
+title: "Perception of Threat as Related to Emotions and Attitudes on Support for the Accommodation of Migrants: Structural Equation Modeling Approach "
 author: "Hadi Sam Nariman"
 date: "January 13, 2018"
 output: html_document
