@@ -32,8 +32,20 @@ coll_df = read.table("C:\\Users\\User\\Desktop\\To Mac\\Hadi-Final-Project\\Data
 View (coll_df)
 ```
 
+##Executive Summary
+
+Using R statistical package (version 3.4.3), exploratory data analyses were performed and the current study's hypotheses were tested by performing two stractural equation models. Exploratory data analyses contained checking for missing values, exploring the nature of the variables by summarizing the data in a table, checking for the outliers, checking for normality of the variable, and performing correlation analyses between dependent variables and between independent variables. By the first hypothesis we assumed that there will be a negative association between perception of the three forms of threat and support for the accommodation of migrants. The hypothesis was partially supported, and it was found that symbolic threat and realistic threat significantly and negatively predicted realistic, cultural, and political support for the accommodation of migrants, however, no such relationship was found between collective ownership threat and the dependent variables. The second hypothesis was that there will be a positive realtionship between exposure to threat and perception of negative feelings. Our Second hypothesis was again partially supported and it was found that symbolic threat significantly and positively predicted perception of negative feelings, while there was no such as association between the other two types of threat and perception of negative feelings.
+
+##Description of the Dataset
+
+435 participants (demographic information  not available) were recruited a 7-point likert type questionnaire. The questionnaire measured support for the accommodation of migrants in the Netherlands, emotional reaction, and three forms of threat;collective ownership, symbolic, and realistic. Moreover, support for the accommodation of migrants measured three forms of support; realistic support, cultural support, and political support. 
+The dataset was originally in an SPSS file which was later converted to a dat file, and finally read by R. 
+The dataset was obtained from a professor in a Dutch university during an internship in the Ntherlands. Since, the dataset is supposed to be treated confidentially, the athour of the current paper cannot publish it and give further information about. 
+
 ##Exploratory Data Analyses
 Exploring Missing Variables in the Dataset
+
+No missing values were found in the dataset
 
 ```{r}
 sapply(coll_df,function(x) sum(is.na(x)))
@@ -59,7 +71,9 @@ coll_df %>%
 detach(coll_df)
 ```
 
-Inquring into q6_6 with an outlier
+Inquring into q6_9 with an outlier
+
+An outlier was found in q6_9 which was prefered to be kept in the dataset.
 
 ```{r}
 outlierKD <- function(dt, var) {
@@ -111,6 +125,7 @@ coll_df %>%
 Correlation between Items represnting Political Support and the Plot
 
 q18_1. Muslims are allowed to politically organize themselves in the Netherlands in order to try to influence policy.
+
 q18_4. Muslims are allowed to exercise important official duties (mayor, minister) in the Netherlands.
 
 ```{r}
@@ -124,6 +139,7 @@ ggplot(coll_df) +
 Correlation between Items represnting Realistic Support and the Plot
 
 q18_3. Muslims are allowed to maintain their cultural identity.
+
 q18_6. Muslims are entitled to their own culture and traditions.
 
 ```{r}
@@ -137,6 +153,7 @@ ggplot(coll_df) +
 Correlation between Items represnting Cultural Support and the Plot
 
 q18_2. Much more attention is needed for discrimination of Muslims on the labour market.
+
 q18_5. Better care should be taken of ensuring Muslims equal opportunities to get a good job.
 
 ```{r}
@@ -148,6 +165,8 @@ ggplot(coll_df) +
 ```
 
 ####Correlation between Three Froms of Threat (Symbolic, Realistic, and Collective Ownership) in a Path Analysis 
+
+For the independent variables, the correlation analyses were performed in factor level in a path analysis using a structural equation model. 
 
 ```{r}
 model <- ' st =~ q16_1 + q16_2 + q16_3 + q16_4
@@ -161,12 +180,11 @@ summary(cormodel, fit.measures=TRUE, standardized=TRUE)
 semPaths(cormodel, "Standardized", "Estimates")
 ```
 
-#Hypothesis I
+##Hypothesis I
 
 I was hypothesized that there will be negative significant associations between the three forms of threat and support for the accommodation of migrants. The hypothesis was partly supported where higher degrees of symbolic and realistic threat resulted in lower support. Hwoever, there was no such a relatrionship between collective onwnership threat and support for the accommodation of migrants.
 
-##Structural Equation Modeling 
-### Confirmatory Factor Analyses
+###Confirmatory Factor Analyses
 
 Confirmatory factor analyses were computed for all latent variables (both independent and dependent). Regarding the dependent constructs, the model $x^{2}$ of 12.131 showed a marginal absolute fit (*p* = .0591), while other measures confirmed that the model fit is satisfactory: CFI = .995; TLI = .989; SRMR = .012; and RMSEA = .048 and 90% CI = .001 - .088. All the factor loadings were statistically significant (*p* < .001) and the standardized factor loadings were between .78 and .92. 
 The model $x^{2}$ of 60.625 of the independent variables indicated a good model fit too (*p* = .1044) which was confirmed by other measures of model fit: CFI = .998; TLI = .998; SRMR = .01; and RMSEA = .02 and 90% CI = 0.001 - 0.042. All the factor loadings were statistically significant (*p* < .001) and the standardized factor loadings were between .83 and .95. Moreover, in order to improve the model fit, errors of two items from the symbolic threat scale and three items from the realistic threat scale were allowed to covary.
@@ -301,11 +319,11 @@ summary(smodel, standardized=TRUE)
 semPaths(smodel, "Standardized", "Estimates")
 ```
 
-#Hypothesis II
+##Hypothesis II
 
 I was hypothesized that higher perception of threat would lead to higher perception of negative feelings. The hypothesis was again partially supported as only symbolic threat significantly was associated with higher negative feelings. While no significant relations was found between the other two forms of threat, realistic and collective ownership, and perception of negative feelings. 
 
-##Structural Equation Modeling 
+###Structural Model
 A structural equation modeling was conducted to measure the effect of three forms of threat on thermometer questions. The chi-square test didn't show an absolute fit ($x^{2} = 185.963$; df = 84; *p* < .001). However, other measures indicated a satisfactory model fit in general; CFI = .987; TLI = .984; SRMR = .023; and RMSEA = .053 and 90% CI < 0.043 - .063. The results showed that the path coefficients from symbolic threat to thermometer questions ($\beta$ = -.446, *p* = .003) were found to be significant. In other words, the higher the symbolic threat the more negative feelings are perceived. No significant statistics were found from the path coefficients of collective ownership and realistic types of threat on the thermometer questions.
 
 Model Fit 
@@ -332,3 +350,8 @@ Thermomodel <- sem(model, data=coll_df)
 summary(Thermomodel, standardized=TRUE)
 semPaths(Thermomodel, "Standardized", "Estimates")
 ``````
+
+##Conclusion
+
+Results obtained from two structural equation models showed that perception of threat would lead members of the host society not to support accommodation of migrants. More specifically, the results of the current study suggests that having been exposed to symbolic threat would be a stronger predictor of lack of support for accommodation of migrants compared to the other two types of threat; collective ownership and realistic.  Further, it is important to consider the role of emotions with regard to perception of threat. As the results suggested, exposure to threat would cause perception of negative feelings. 
+
